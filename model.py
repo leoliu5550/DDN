@@ -1,20 +1,23 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as f
+IMAGE_SIZE = 200
 class CNNBlock(nn.Module):
     def __init__(self,in_channel,out_channel,act = True,**kwargs):
         super().__init__()
         self.act = act
         self.conv = nn.Conv2d(in_channels = in_channel,
                         out_channels = out_channel,**kwargs)
-        self.BN = nn.BatchNorm2d(out_channel)
+        self.bn = nn.BatchNorm2d(out_channel)
         self.ReLU = nn.ReLU()
 
     def forward(self,x):
         x = self.conv(x)
-        x = self.BN(x)
+        x = self.bn(x)
         if self.act:
             x = self.ReLU(x)
         return x
+
 class BTNK1(nn.Module):
     def __init__(self,in_channel,half = False,**kwargs):
         super().__init__()
@@ -102,7 +105,6 @@ class R3Block(nn.Module):
             x = layer(x)
         return x
 
-
 class R4Block(nn.Module):
     def __init__(self,in_channel):
         super().__init__()
@@ -136,3 +138,46 @@ class R5Block(nn.Module):
         for layer in self.Layer_BTNK02:
             x = layer(x)
         return x
+
+class MFN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        in_list = [3,64,256,512,1024,2048]
+        self.r1 = R1Block(in_list[0])
+        self.r2 = R2Block(in_list[1])
+        self.r2Conv = nn.Sequential(
+            nn.Conv2d(in_channels = in_list[2],out_channels = in_list[2],kernel_size=3,stride=2,padding =1),
+            nn.Conv2d(in_channels = in_list[2],out_channels = in_list[2],kernel_size=3,stride=2,padding =1),
+            nn.Conv2d(in_channels = in_list[2],out_channels = in_list[2],kernel_size=1,stride=1)
+        )
+        self.r3 = R3Block(in_list[2])
+        self.r3Pool = nn.MaxPool2d(kernel_size = 2,stride=2)
+        self.r4 = R4Block(in_list[3])
+        self.r4Conv = nn.Conv2d(in_channels = in_list[4],out_channels = in_list[4],kernel_size=1,stride=1)
+        self.r5 = R5Block(in_list[4])
+        self.r5Conv = nn.Sequential(
+            nn.ConvTranspose2d(in_channels = in_list[5],out_channels = in_list[5],kernel_size = 4,stride=2,padding =1),
+            nn.Conv2d(in_channels = in_list[5],out_channels = in_list[5],kernel_size=1,stride=1)
+        )
+    def forward(self,x):
+        R_output= []
+        x = self.r1(x)
+        x = self.r2(x)
+        R_output.append(x) # R_output+= x
+        R_output[-1] = self.r2Conv(R_output[-1])
+
+        x = self.r3(x)
+        R_output.append(x) # R_output+= x
+        R_output[-1] = self.r3Pool(R_output[-1])
+        x = self.r4(x)
+        R_output.append(x) # R_output+= x
+        R_output[-1] = self.r4Conv(R_output[-1])
+        x = self.r5(x)
+        R_output.append(x) # R_output+= x
+        R_output[-1] = self.r5Conv(R_output[-1])
+        for i,out in enumerate(R_output):
+            R_output[i] = f.normalize(out,p=2) #,dim=-1
+        output = torch.cat(R_output,dim=1)
+        print(output.shape)
+        return output
+
