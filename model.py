@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as f
 IMAGE_SIZE = 200
+FEAT_STRIDE = 16
+
 class CNNBlock(nn.Module):
     def __init__(self,in_channel,out_channel,act = True,**kwargs):
         super().__init__()
@@ -183,11 +185,12 @@ class MFN(nn.Module):
         R_output.append(x) # R_output+= x
         R_output[-1] = self.r5Conv(R_output[-1])
         for i,out in enumerate(R_output):
-            print(out.shape)
             R_output[i] = f.normalize(out,p=2) #,dim=-1
 
         output = torch.cat(R_output,dim=1)
-        print(output.shape)
+
+        global  FEAT_STRIDE
+        FEAT_STRIDE = x.shape[2] // output.shape[2]
         return output
 
 

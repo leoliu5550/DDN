@@ -65,7 +65,8 @@ class TestMFN:
     def test_MFN(self):
         model = MFN()
         x = torch.rand(1,3,256,256)
-        print(model(x).shape)
         assert model(x).shape == torch.Size([1,3840,16,16])
-
-## Image Size from 256*256 to 16*16
+    
+    def test_FEAT_STRIDE(self):
+        assert FEAT_STRIDE == 16
+        '''Image Size from 256*256 to 16*16;therefore,FEAT_STRIDE is 265//16 == 16'''
