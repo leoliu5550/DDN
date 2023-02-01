@@ -1,4 +1,9 @@
-anchor_size:
-  - 0.5
+ANCHOR_RATIOS:
   - 1
+  - 0.5
   - 2
+ANCHOR_SCALES:
+  - 64
+  - 128
+  - 256
+  - 512
