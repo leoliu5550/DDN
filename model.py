@@ -185,12 +185,13 @@ class MFN(nn.Module):
         R_output.append(x) # R_output+= x
         R_output[-1] = self.r5Conv(R_output[-1])
         for i,out in enumerate(R_output):
+            print(R_output[i].shape)
             R_output[i] = f.normalize(out,p=2) #,dim=-1
 
         output = torch.cat(R_output,dim=1)
 
-        global  FEAT_STRIDE
-        FEAT_STRIDE = x.shape[2] // output.shape[2]
+        # global  FEAT_STRIDE
+        # FEAT_STRIDE = x.shape[2] // output.shape[2]
         return output
 
 

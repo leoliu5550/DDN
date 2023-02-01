@@ -7,8 +7,6 @@ from model import *
 should preprocess the image size to 2^n
 '''
 
-
-
 class TestCNNBlock:
     def test_CNN(self):
         x = torch.ones(1,3,256,256) # 3 times = 56x56
