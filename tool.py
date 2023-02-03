@@ -1,7 +1,7 @@
 import torch 
-scales = [64,128] 
-ratios = [0.5,1,2]
-FEAT_STRIDE = 16
+# scales = [64,128] 
+# ratios = [0.5,1,2]
+# FEAT_STRIDE = 16
 
 class AnchorGenerator:
     def __init__(self,scales,ratios):
@@ -28,6 +28,6 @@ class AnchorGenerator:
     
 
 
-gen = AnchorGenerator(scales, ratios)
-print(gen.generate_anchors())
+# gen = AnchorGenerator(scales, ratios)
+# print(gen.generate_anchors())
 # print(gen.base_anchors)
