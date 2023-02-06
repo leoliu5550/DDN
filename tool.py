@@ -53,12 +53,12 @@ class AnchorGenerator(Generator):
     @staticmethod # should fixe
     def get_LabelInfo(label_path):
         with open(label_path,'r') as file:
+            # x0,y0,w,h
             cfg = file.read().splitlines()
         data = []
         for lines in cfg:
             ln = lines.split(' ')
             ln = [eval(i) for i in ln]
-
             data.append([ln[0],ln[1],ln[2],ln[1]+ln[3],ln[2]+ln[4]])
 
         # x = xmin
@@ -66,7 +66,6 @@ class AnchorGenerator(Generator):
         # w = xmax - xmin
         # h = ymax - ymin
 
-        
         return data
 
 
