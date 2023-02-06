@@ -1,3 +1,6 @@
+TRAINING:
+  True
+  
 ANCHOR_RATIOS:
   - 1
   - 0.5
@@ -7,3 +10,4 @@ ANCHOR_SCALES:
   - 128
   - 256
   - 512
+
