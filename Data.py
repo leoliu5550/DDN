@@ -1,14 +1,20 @@
 import torch
 from torch.utils.data import Dataset,DataLoader
+import yaml 
+import os 
 
-
-PATH = '/data/lcliu/neudet'
+# PATH = '/data/lcliu/neudet'
 class DNN_DATA(Dataset):
-    def __init__(self,path,):
-        self
+    def __init__(self,path):
+        cfg_path = os.path.join(path,"data.yaml")
+        with open(cfg_path, 'r') as file:
+            self.cfg = yaml.safe_load(file)
+        self.image_path = os.path.join(path,self.cfg['train'][2:])
+        self.label_path = os.path.join(os.path.split(self.image_path)[0],'labels')
+
 
     def __len__(self):
-        return None
+        return os.listdir(self.image_path)
 
     def __getitem__(self, index):
         return None
@@ -83,3 +89,5 @@ class YOLODataset(Dataset):
                     targets[scale_idx][anchor_on_scale, i, j, 0] = -1  # ignore prediction
 
         return image, tuple(targets)
+
+
