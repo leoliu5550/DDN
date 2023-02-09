@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import Dataset,DataLoader
+from torchvision import io
 import yaml 
 import os 
 
@@ -10,14 +11,15 @@ class DNN_DATA(Dataset):
         with open(cfg_path, 'r') as file:
             self.cfg = yaml.safe_load(file)
         self.image_path = os.path.join(path,self.cfg['train'][2:])
+        self.image_file = os.listdir(self.image_path)
         self.label_path = os.path.join(os.path.split(self.image_path)[0],'labels')
 
-
     def __len__(self):
-        return os.listdir(self.image_path)
+        return len(os.listdir(self.image_path))
 
-    def __getitem__(self, index):
-        return None
+    def __getitem__(self, idx):
+        image = io.read_image(os.path.join(self.image_path,self.image_file[idx]))
+        return image
 
 
 class YOLODataset(Dataset):
