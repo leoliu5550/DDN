@@ -21,9 +21,9 @@ class Generator:
         w_ratios  = 1.0/ratios
         anchors_w = (w_ratios[:,None] * scales[None,:]).view(-1)
 
-        self.base_anchors = torch.stack([ -anchors_w, anchors_h, anchors_w, -anchors_h], dim=1)/ 2
+        self.base_anchors = torch.stack([ anchors_w, anchors_h], dim=1)
         
-        return self.base_anchors
+        return self.base_anchors # change only return w and h
     
 # torch.Size([12, 4])
 # tensor([[ -64.,   16.,   64.,  -16.],
