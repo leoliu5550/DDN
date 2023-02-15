@@ -1,25 +1,48 @@
 import torch
 from torch.utils.data import Dataset,DataLoader
 from torchvision import io
+import numpy as np
 import yaml 
 import os 
 
 # PATH = '/data/lcliu/neudet'
 class DNN_DATA(Dataset):
-    def __init__(self,path):
+    def __init__(self,path,side):
+        
+        self.side = side 
         cfg_path = os.path.join(path,"data.yaml")
         with open(cfg_path, 'r') as file:
             self.cfg = yaml.safe_load(file)
         self.image_path = os.path.join(path,self.cfg['train'][2:])
         self.image_file = os.listdir(self.image_path)
         self.label_path = os.path.join(os.path.split(self.image_path)[0],'labels')
-
+        with open('config.yaml','r') as file:
+            self.cfg = yaml.safe_load(file)
     def __len__(self):
         return len(os.listdir(self.image_path))
 
     def __getitem__(self, idx):
-        image = io.read_image(os.path.join(self.image_path,self.image_file[idx]))
-        return image
+        single_image_path = os.path.join(self.image_path,self.image_file[idx])
+        image = io.read_image(single_image_path)
+        single_labels_path = os.path.join(self.label_path,self.image_file[idx])
+        single_labels_path = os.path.splitext(single_labels_path)[0]+'.txt'
+        
+        labels = np.loadtxt(fname=single_labels_path, delimiter=" ", ndmin=2)
+        RPN_obj= torch.zeros([1,self.side,self.side])
+        RPN_nobj = torch.ones([1,self.side,self.side])
+        RPN_boxs = torch.zeros([4,self.side,self.side])
+
+        for lines in labels:
+            x = int(lines[1] * self.side)
+            y = int(lines[2] * self.side)
+            RPN_obj[0][x][y] = 1
+            RPN_nobj[0][x][y] = 0
+            RPN_boxs[0][x][y] = lines[1]-x
+            RPN_boxs[1][x][y] = lines[2]-y
+            RPN_boxs[2][x][y] = lines[3]
+            RPN_boxs[3][x][y] = lines[4]
+        RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
+        return RPN_labels
 
 
 class YOLODataset(Dataset):

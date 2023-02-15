@@ -26,7 +26,7 @@ class RPN(nn.Module):
         self.anchor_scales = _cfg['ANCHOR_SCALES']
         # 產生出 len(self.anchor_ratios) * len(self.anchor_scales)種先驗框 ＊２背景or not
         self.nc_score_out = len(self.anchor_ratios) * len(self.anchor_scales) * 2
-        self.rpn_cls_pred = nn.Conv2d(
+        self.rpn_objcls_pred = nn.Conv2d(
             in_channels = 512,
             out_channels = self.nc_score_out,
             kernel_size = 1,
@@ -46,14 +46,16 @@ class RPN(nn.Module):
         # get all init anchor x0,y0,x1,y1
         self.anchor = AnchorGenerator(self.anchor_ratios,self.anchor_scales).generate_anchors()
         self.ReLU = nn.ReLU()
+        self.softmax = nn.Softmax(dim=1)
 
-
+        
     def forward(self,x):
         x = self.cnn(x)
         x = self.ReLU(x)
         box_pred = self.rpn_box_pred(x)
-        self.rpn_cls_loss = 0
-        self.rpn_box_loss = 0
+        cls_pred = self.rpn_objcls_pred(x)
+        cls_pred2 = self.softmax(cls_pred)
+
 
         # if self._training:
 
@@ -61,7 +63,7 @@ class RPN(nn.Module):
 
 
 
-        return obj_class,box_pred
+        return cls_pred,cls_pred2,box_pred
 
 
 

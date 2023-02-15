@@ -4,7 +4,7 @@ import sys
 sys.path.append("/home/lcliu/Documents/DDN")
 from Data import *
 path = 'DATA'
-data = DNN_DATA(path)
+data = DNN_DATA(path,5)
 
 class TestDNN_DATA:
     def test_parameter(self):
@@ -21,4 +21,4 @@ class TestDNN_DATA:
     def test__getitem(self):
         assert 1==1
 
-print(data.__getitem__(0).shape)
+print(data.__getitem__(0))
