@@ -19,6 +19,7 @@ class RPN_DATA(Dataset):
         self.label_path = os.path.join(os.path.split(self.image_path)[0],'labels')
         with open('config.yaml','r') as file:
             self.cfg = yaml.safe_load(file)
+            
     def __len__(self):
         return len(os.listdir(self.image_path))
 
@@ -43,6 +44,7 @@ class RPN_DATA(Dataset):
             RPN_boxs[2][x][y] = lines[3]
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
+
         return RPN_labels
 
 

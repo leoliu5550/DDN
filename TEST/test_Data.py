@@ -7,7 +7,8 @@ from Data import *
 
 class Test_RPN_DATA:
     path = 'DATA'
-    data = RPN_DATA(path,16)
+    side_parameter = 3
+    data = RPN_DATA(path,side_parameter)
     def test_parameter(self):
         assert self.data.data_cfg['nc'] == 6
         assert self.data.image_path == 'DATA/train/images' 
@@ -21,5 +22,4 @@ class Test_RPN_DATA:
 
     def test__getitem(self):
         image_rpn =self.data.__getitem__(0)
-        print(image_rpn)
-        assert image_rpn.shape == torch.Size([6,16,16])
+        assert image_rpn.shape == torch.Size([6,self.side_parameter,self.side_parameter])
