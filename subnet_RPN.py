@@ -55,6 +55,8 @@ class RPN(nn.Module):
         # channel is 24 per 2
         cls_pred = self.softmax(self.rpn_objcls_pred(x))
         output = torch.cat((cls_pred,box_pred),dim=1)
+        # output = [1,24,16,16] cat [1,48,16,16]
+
         return output
 
 

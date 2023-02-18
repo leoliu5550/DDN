@@ -3,22 +3,23 @@ import torch
 import sys
 sys.path.append("/home/lcliu/Documents/DDN")
 from Data import *
-path = 'DATA'
-data = RPN_DATA(path,5)
 
-class TestDNN_DATA:
+
+class Test_RPN_DATA:
+    path = 'DATA'
+    data = RPN_DATA(path,16)
     def test_parameter(self):
-        assert data.data_cfg['nc'] == 6
-        assert data.image_path == 'DATA/train/images' 
-        assert data.label_path == 'DATA/train/labels'
-        assert data.image_file == ['patches_249.jpg']
-        assert len(data.image_file) == 1
+        assert self.data.data_cfg['nc'] == 6
+        assert self.data.image_path == 'DATA/train/images' 
+        assert self.data.label_path == 'DATA/train/labels'
+        assert self.data.image_file == ['patches_249.jpg']
+        assert len(self.data.image_file) == 1
 
     def test__len(self):
-        assert data.__len__() == 1
+        assert self.data.__len__() == 1
 
 
     def test__getitem(self):
-        image_rpn =data.__getitem__(0)
+        image_rpn =self.data.__getitem__(0)
         print(image_rpn)
-        assert image_rpn.shape == torch.Size([6,5,5])
+        assert image_rpn.shape == torch.Size([6,16,16])
