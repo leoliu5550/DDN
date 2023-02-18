@@ -19,8 +19,6 @@ class RPN(nn.Module):
                         padding = 1,
                         kernel_size=3)
 
-        
-
         self._training = _cfg['TRAINING']
         self.anchor_ratios = _cfg['ANCHOR_RATIOS']
         self.anchor_scales = _cfg['ANCHOR_SCALES']
@@ -47,23 +45,17 @@ class RPN(nn.Module):
         self.anchor = AnchorGenerator(self.anchor_ratios,self.anchor_scales).generate_anchors()
         self.ReLU = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
+        
 
         
     def forward(self,x):
         x = self.cnn(x)
         x = self.ReLU(x)
         box_pred = self.rpn_box_pred(x)
-        cls_pred = self.rpn_objcls_pred(x)
-        cls_pred2 = self.softmax(cls_pred)
-
-
-        # if self._training:
-
-
-
-
-
-        return cls_pred,cls_pred2,box_pred
+        # channel is 24 per 2
+        cls_pred = self.softmax(self.rpn_objcls_pred(x))
+        output = torch.cat((cls_pred,box_pred),dim=1)
+        return output
 
 
 

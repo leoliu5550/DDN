@@ -4,11 +4,11 @@ import sys
 sys.path.append("/home/lcliu/Documents/DDN")
 from Data import *
 path = 'DATA'
-data = DNN_DATA(path,5)
+data = RPN_DATA(path,5)
 
 class TestDNN_DATA:
     def test_parameter(self):
-        assert data.cfg['nc'] == 6
+        assert data.data_cfg['nc'] == 6
         assert data.image_path == 'DATA/train/images' 
         assert data.label_path == 'DATA/train/labels'
         assert data.image_file == ['patches_249.jpg']
@@ -19,6 +19,6 @@ class TestDNN_DATA:
 
 
     def test__getitem(self):
-        assert 1==1
-
-print(data.__getitem__(0))
+        image_rpn =data.__getitem__(0)
+        print(image_rpn)
+        assert image_rpn.shape == torch.Size([6,5,5])
