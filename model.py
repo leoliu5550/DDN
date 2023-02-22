@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as f
+from subnet_RPN import RPN
 IMAGE_SIZE = 200
 FEAT_STRIDE = 16
 
@@ -194,4 +195,15 @@ class MFN(nn.Module):
         # FEAT_STRIDE = x.shape[2] // output.shape[2]
         return output
 
+class temp_model(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
 
+        self.MFN = MFN()
+        self.RPN = RPN()
+    
+    def forward(self,x):
+        x = MFN(x)
+        x = RPN(x)
+
+        return x

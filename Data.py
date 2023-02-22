@@ -45,7 +45,7 @@ class RPN_DATA(Dataset):
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
 
-        return RPN_labels
+        return image,RPN_labels
 
 
 

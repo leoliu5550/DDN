@@ -17,9 +17,15 @@ class Test_RPN_DATA:
         assert len(self.data.image_file) == 1
 
     def test__len(self):
-        assert self.data.__len__() == 1
+        assert self.data.__len__() == 2
 
 
     def test__getitem(self):
         image_rpn =self.data.__getitem__(0)
-        assert image_rpn.shape == torch.Size([6,self.side_parameter,self.side_parameter])
+        print()
+        print(image_rpn[0].shape)
+        assert image_rpn[0].shape == torch.Size([3,200,200])
+        assert image_rpn[1].shape == torch.Size(
+            [6,self.side_parameter,self.side_parameter]
+            )
+        
