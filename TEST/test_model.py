@@ -68,3 +68,11 @@ class TestMFN:
     def test_FEAT_STRIDE(self):
         assert FEAT_STRIDE == 16
         '''Image Size from 256*256 to 16*16;therefore,FEAT_STRIDE is 265//16 == 16'''
+
+class TestModel:
+    model = temp_model()
+    x = torch.ones(1,3,200,200)
+    output = model(x)
+
+    def test_Temp_part(self):
+        assert self.output.shape == torch.Size([1,72,16,16])

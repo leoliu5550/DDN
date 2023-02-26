@@ -46,7 +46,7 @@ class BTNK1(nn.Module):
         x1 = self.CNN(x1)
         x = x0 + x1
         x = self.ReLU(x)
-        return x0
+        return x
         
 class BTNK2(nn.Module):
     def __init__(self,in_channel,**kwargs):
@@ -63,9 +63,9 @@ class BTNK2(nn.Module):
         x0 = self.path1(x0)
         x1 = x
         x1 = self.CNN(x1)
-        x = x0 + x1
-        x = self.ReLU(x)
-        return x0
+        out = x0 + x1
+        out = self.ReLU(out)
+        return out
 
 
 class R1Block(nn.Module):
@@ -200,9 +200,11 @@ class temp_model(nn.Module):
         super().__init__()
 
         self.MFN = MFN()
-        self.RPN = RPN()
+        self.RPN = RPN(in_channel=3840)
     
     def forward(self,x):
+        print(MFN)
+        print(x.shape)
         x = MFN(x)
         x = RPN(x)
 
