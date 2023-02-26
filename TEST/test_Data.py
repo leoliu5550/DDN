@@ -13,8 +13,7 @@ class Test_RPN_DATA:
         assert self.data.data_cfg['nc'] == 6
         assert self.data.image_path == 'DATA/train/images' 
         assert self.data.label_path == 'DATA/train/labels'
-        assert self.data.image_file == ['patches_249.jpg']
-        assert len(self.data.image_file) == 1
+        assert len(self.data.image_file) == 2
 
     def test__len(self):
         assert self.data.__len__() == 2

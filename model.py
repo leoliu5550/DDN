@@ -186,7 +186,7 @@ class MFN(nn.Module):
         R_output.append(x) # R_output+= x
         R_output[-1] = self.r5Conv(R_output[-1])
         for i,out in enumerate(R_output):
-            print(R_output[i].shape)
+            # print(R_output[i].shape)
             R_output[i] = f.normalize(out,p=2) #,dim=-1
 
         output = torch.cat(R_output,dim=1)
@@ -195,7 +195,7 @@ class MFN(nn.Module):
         # FEAT_STRIDE = x.shape[2] // output.shape[2]
         return output
 
-class temp_model(nn.Module):
+class RPN_model(nn.Module):
     def __init__(self) -> None:
         super().__init__()
 
@@ -203,9 +203,7 @@ class temp_model(nn.Module):
         self.RPN = RPN(in_channel=3840)
     
     def forward(self,x):
-        print(MFN)
-        print(x.shape)
-        x = MFN(x)
-        x = RPN(x)
+        x = self.MFN(x)
+        x = self.RPN(x)
 
         return x

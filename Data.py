@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset,DataLoader
-from torchvision import io
+from torchvision import io,transforms
 import numpy as np
 import yaml 
 import os 
@@ -26,7 +26,10 @@ class RPN_DATA(Dataset):
     def __getitem__(self, idx):
         single_image_path = os.path.join(self.image_path,self.image_file[idx])
         
-        image = io.read_image(single_image_path)
+        image = io.read_image(single_image_path).float()
+        image = transforms.Resize(256)(image)
+        # print('image from DATA.py')
+        # print(image.type())
         single_labels_path = os.path.join(self.label_path,self.image_file[idx])
         single_labels_path = os.path.splitext(single_labels_path)[0]+'.txt'
         
