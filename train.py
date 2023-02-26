@@ -37,6 +37,8 @@ for epoch in range(EPOCH):
     print(labels.shape)
     optimizer.zero_grad()
     outputs = model(image)
-    loss = loss_fn(outputs,labels)
+    print(outputs.shape)
+    # loss = loss_fn(outputs,labels)
+    break
     # loss.backward()
     # optimizer.step()
