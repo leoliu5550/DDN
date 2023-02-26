@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from tool import AnchorGenerator
 import yaml
-
+# in someday I will come train all together
 class RPN(nn.Module):
     def __init__(self,in_channel):
         super().__init__()
