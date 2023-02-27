@@ -1,17 +1,21 @@
+import yaml
+import os
 import torch 
 import torch.nn as nn
 import torch.optim as optim
 from model import RPN_model
 from torch.utils.data import DataLoader
-
 from Data import RPN_DATA
 from loss import RPN_loss
 
+with open('config.yaml','r') as file:
+    _cfg = yaml.safe_load(file)
 
 
+MODEL_PATH = os.path.join('model',_cfg['MODELNAME'][0])
 
 # training loop
-EPOCH = 1
+EPOCH = 100000
 BATCH = 1
 SLIDE = 16
 LEARNING_RATE = 0.001
@@ -22,23 +26,40 @@ dataloader = DataLoader(
     shuffle=False)
 dataiter = iter(dataloader)
 
-model = RPN_model()
+if torch.cuda.is_available():
+    device = torch.device('cuda:0')
+else:
+    device = torch.device('cpu')
+
+if  os.path.exists(MODEL_PATH):
+    model = torch.load(MODEL_PATH)
+else:
+    model = RPN_model()
+model=model.to(device)
+
+
+
+
 loss_fn = RPN_loss()
 optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 for epoch in range(EPOCH):
     image,labels,picture_name = next(dataiter)
-    print(picture_name)
-    print('image')
-    print(image.type())
-    print(image.shape)
-    print('labels')
-    print(labels.type())
-    print(labels.shape)
     optimizer.zero_grad()
+    image = image.to(device)
+    labels = labels.to(device)
+
     outputs = model(image)
-    print(outputs.shape)
-    # loss = loss_fn(outputs,labels)
-    break
-    # loss.backward()
-    # optimizer.step()
+    loss = loss_fn(outputs,labels)
+    print(loss)
+    loss.backward()
+    optimizer.step()
+
+torch.save(model,MODEL_PATH)
+
+
+
+
+# from torchstat import stat
+# stat(model, (3, 224, 224))
+

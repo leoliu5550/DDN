@@ -10,7 +10,7 @@ class RPN_DATA(Dataset):
     def __init__(self,path,side):
         self.side = side 
         cfg_path = os.path.join(path,"data.yaml")
-        print(cfg_path)
+        # print(cfg_path)
         with open(cfg_path, 'r') as file:
             self.data_cfg = yaml.safe_load(file)
         

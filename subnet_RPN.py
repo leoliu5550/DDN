@@ -11,6 +11,7 @@ class RPN(nn.Module):
                 _cfg = yaml.safe_load(file)
             except yaml.YAMLError as exc:
                 print(exc)
+                
         # 圖像輸入RPN
         self.cnn = nn.Conv2d(
                         in_channels=in_channel,

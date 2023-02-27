@@ -1,5 +1,8 @@
 TRAINING:
   True
+MODELNAME:
+  - 'tempmodel.pt'
+
 Hyperparamete:
   - 2 
 ANCHOR_RATIOS:
