@@ -39,6 +39,7 @@ class RPN_DATA(Dataset):
         RPN_boxs = torch.zeros([4,self.side,self.side])
 
         for lines in labels:
+            # use x,y,w,h system
             x = int(lines[1] * self.side)
             y = int(lines[2] * self.side)
             RPN_obj[0][x][y] = 1
@@ -48,7 +49,7 @@ class RPN_DATA(Dataset):
             RPN_boxs[2][x][y] = lines[3]
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
-
+        
         return image,RPN_labels,single_image_path
 
 
