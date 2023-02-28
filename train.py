@@ -15,7 +15,7 @@ with open('config.yaml','r') as file:
 MODEL_PATH = os.path.join('model',_cfg['MODELNAME'][0])
 
 # training loop
-EPOCH = 100000
+EPOCH = 2#100000 # problem
 BATCH = 1
 SLIDE = 16
 LEARNING_RATE = 0.001
@@ -26,6 +26,8 @@ dataloader = DataLoader(
     shuffle=False)
 dataiter = iter(dataloader)
 
+
+# GPU config
 if torch.cuda.is_available():
     device = torch.device('cuda:0')
 else:
