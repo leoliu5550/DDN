@@ -46,8 +46,6 @@ class AnchorGenerator(Generator):
         self.base_anchors = self.generate_anchors()
 
     def RPN_proposal_target(self):
-
-
         return None
 
     @staticmethod # should fixe
@@ -60,43 +58,25 @@ class AnchorGenerator(Generator):
             ln = lines.split(' ')
             ln = [eval(i) for i in ln]
             data.append([ln[0],ln[1],ln[2],ln[1]+ln[3],ln[2]+ln[4]])
-
         # x = xmin
         # y = ymin
         # w = xmax - xmin
         # h = ymax - ymin
-
         return data
 
 
+class Indicator:
+    @staticmethod
+    def IoU(pred,true_ground):
+        
+        intersection = \
+            true_ground[2,...] * true_ground[3,...].transpose()# \
+            # - (true_ground[2]*(pred[1]-true_ground[1]) + true_ground[3]*(pred[0]-true_ground[0])) \
+            # + (pred[0]-true_ground[0])*(pred[1]-true_ground[1])
 
-
-
-
-# scales = [64,128,256,512] 
-# ratios = [0.5,1,2]
-# FEAT_STRIDE = 16
-
-# anc = AnchorGenerator(scales,ratios)#,feat_stride=FEAT_STRIDE)
-# print(anc.get_LabelInfo('sample/patches_249.txt'))
-
-
-
-# Draw Image
-# from PIL import Image ,ImageDraw
-# from tool import AnchorGenerator
-
-# scales = [64,128,256,512] 
-# ratios = [0.5,1,2]
-# FEAT_STRIDE = 16
-
-# anc = AnchorGenerator(scales,ratios)#,feat_stride=FEAT_STRIDE)
-# label = anc.get_LabelInfo('sample/patches_249.txt') 
-# print(label)
-# img = Image.open(r"sample/patches_249.jpg")
-# a = ImageDraw.Draw(img)
-# for i in label:
-#     i = [l * 200 for l in i]
-#     print(i)
-#     a.rectangle(((i[1],i[2]),(i[3],i[4])),outline='red',width = 3)
-# img.save("sample/test.jpg")
+        # union = \
+        #     pred[2] * pred[3] \
+        #     + (true_ground[2]*(pred[1]-true_ground[1]) + true_ground[3]*(pred[0]-true_ground[0])) \
+        #     - (pred[0]-true_ground[0])*(pred[1]-true_ground[1])
+    
+        return intersection #/union
