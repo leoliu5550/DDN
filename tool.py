@@ -25,20 +25,21 @@ class Generator:
         
         return self.base_anchors # change only return w and h
     
-# torch.Size([12, 4])
-# tensor([[ -64.,   16.,   64.,  -16.],
-#         [-128.,   32.,  128.,  -32.],
-#         [-256.,   64.,  256.,  -64.],
-#         [-512.,  128.,  512., -128.],
-#         [ -32.,   32.,   32.,  -32.],
-#         [ -64.,   64.,   64.,  -64.],
-#         [-128.,  128.,  128., -128.],
-#         [-256.,  256.,  256., -256.],
-#         [ -16.,   64.,   16.,  -64.],
-#         [ -32.,  128.,   32., -128.],
-#         [ -64.,  256.,   64., -256.],
-#         [-128.,  512.,  128., -512.]], device='cuda:0')
-
+'''
+torch.Size([12, 4])
+tensor([[ -64.,   16.,   64.,  -16.],
+        [-128.,   32.,  128.,  -32.],
+        [-256.,   64.,  256.,  -64.],
+        [-512.,  128.,  512., -128.],
+        [ -32.,   32.,   32.,  -32.],
+        [ -64.,   64.,   64.,  -64.],
+        [-128.,  128.,  128., -128.],
+        [-256.,  256.,  256., -256.],
+        [ -16.,   64.,   16.,  -64.],
+        [ -32.,  128.,   32., -128.],
+        [ -64.,  256.,   64., -256.],
+        [-128.,  512.,  128., -512.]], device='cuda:0')
+'''
 class AnchorGenerator(Generator):
     def __init__(self, scales, ratios): #,image_size,feat_stride
         super().__init__(scales, ratios)
@@ -68,15 +69,16 @@ class AnchorGenerator(Generator):
 class Indicator:
     @staticmethod
     def IoU(pred,true_ground):
+        # assume input size is (1,4,slide,slode)
+        batch_num = true_ground.shape[0]
+        IoU_loss = 0
+        for i in range(batch_num):
+            intersection = \
+                (true_ground[i,4,...] - (pred[i,2,...]-true_ground[i,2,...]))*(true_ground[i,5,...]-(pred[i,3,...]-true_ground[i,3,...]))
+            union = \
+                pred[i,4,...]*pred[i,5,...] + true_ground[i,4,...]*true_ground[i,5,...] - intersection
+            if torch.equal(union,torch.zeros_like(union)):
+                union = 0.00001
+        IoU_loss+= torch.sum( intersection/union )
         
-        intersection = \
-            true_ground[2,...] * true_ground[3,...].transpose()# \
-            # - (true_ground[2]*(pred[1]-true_ground[1]) + true_ground[3]*(pred[0]-true_ground[0])) \
-            # + (pred[0]-true_ground[0])*(pred[1]-true_ground[1])
-
-        # union = \
-        #     pred[2] * pred[3] \
-        #     + (true_ground[2]*(pred[1]-true_ground[1]) + true_ground[3]*(pred[0]-true_ground[0])) \
-        #     - (pred[0]-true_ground[0])*(pred[1]-true_ground[1])
-    
-        return intersection #/union
+        return IoU_loss

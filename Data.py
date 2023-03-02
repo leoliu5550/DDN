@@ -28,8 +28,6 @@ class RPN_DATA(Dataset):
         
         image = io.read_image(single_image_path).float()
         image = transforms.Resize(256)(image)
-        # print('image from DATA.py')
-        # print(image.type())
         single_labels_path = os.path.join(self.label_path,self.image_file[idx])
         single_labels_path = os.path.splitext(single_labels_path)[0]+'.txt'
         
@@ -44,8 +42,8 @@ class RPN_DATA(Dataset):
             y = int(lines[2] * self.side)
             RPN_obj[0][x][y] = 1
             RPN_nobj[0][x][y] = 0
-            RPN_boxs[0][x][y] = lines[1]-x
-            RPN_boxs[1][x][y] = lines[2]-y
+            RPN_boxs[0][x][y] = lines[1]-x # move O(0,0) to O(1,2) etc...
+            RPN_boxs[1][x][y] = lines[2]-y # move O(0,0) to O(1,2) etc...
             RPN_boxs[2][x][y] = lines[3]
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))

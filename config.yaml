@@ -4,14 +4,16 @@ MODELNAME:
   - 'tempmodel.pt'
 
 Hyperparamete:
-  - 2 
-ANCHOR_RATIOS:
-  - 1
-  - 0.5
-  - 2
+  epsilon: 0.00001
+  
 ANCHOR_SCALES:
   - 64
   - 128
   - 256
   - 512
+
+ANCHOR_RATIOS:
+  - 1
+  - 0.5
+  - 2
 

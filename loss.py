@@ -22,4 +22,3 @@ class RPN_loss(nn.Module):
 
         return loss_obj + loss_box
 
-         
