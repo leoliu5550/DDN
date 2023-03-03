@@ -1,6 +1,5 @@
 import torch 
 import torch.nn as nn
-from tool import AnchorGenerator
 import yaml
 
 class RPN(nn.Module):
@@ -43,7 +42,7 @@ class RPN(nn.Module):
             padding = 0
         )
         # get all init anchor x0,y0,x1,y1
-        self.anchor = AnchorGenerator(self.anchor_ratios,self.anchor_scales).generate_anchors()
+        # self.anchor = AnchorGenerator(self.anchor_ratios,self.anchor_scales).generate_anchors() # generate but unuse
         self.ReLU = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
         

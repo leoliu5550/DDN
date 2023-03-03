@@ -2,68 +2,27 @@ import torch
 import yaml
 
 
-class Generator:
-    def __init__(self,scales,ratios):
-        self.scales = scales
-        self.ratios = ratios
+class AnchorGenerator:
+    def __init__(self): #,image_size,feat_stride
+        # only need generate Tw and Th
+        with open('config.yaml','r') as file:
+            cfg = yaml.safe_load(file)
+        self.scales = cfg['ANCHOR_SCALES']
+        self.ratios = cfg['ANCHOR_RATIOS']
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.base_anchors = torch.zeros([len(self.ratios)*len(self.scales),4  ])
-        pass
+        self.base_anchors = torch.zeros(len(self.ratios)*len(self.scales),2)
 
-    def generate_anchors(self):
-        '''
-        give the base anchor at cell center as (0,0)
-        '''
+    def generate_anchors(self):# only need proposal w & h
         scales = torch.as_tensor(self.scales,  device=self.device)
-        ratios = torch.as_tensor(self.ratios,  device=self.device)
-        h_ratios = ratios
-        anchors_h = (h_ratios[:,None] * scales[None,:]).view(-1)
-        w_ratios  = 1.0/ratios
-        anchors_w = (w_ratios[:,None] * scales[None,:]).view(-1)
-
-        self.base_anchors = torch.stack([ anchors_w, anchors_h], dim=1)
-        
-        return self.base_anchors # change only return w and h
-    
-'''
-torch.Size([12, 4])
-tensor([[ -64.,   16.,   64.,  -16.],
-        [-128.,   32.,  128.,  -32.],
-        [-256.,   64.,  256.,  -64.],
-        [-512.,  128.,  512., -128.],
-        [ -32.,   32.,   32.,  -32.],
-        [ -64.,   64.,   64.,  -64.],
-        [-128.,  128.,  128., -128.],
-        [-256.,  256.,  256., -256.],
-        [ -16.,   64.,   16.,  -64.],
-        [ -32.,  128.,   32., -128.],
-        [ -64.,  256.,   64., -256.],
-        [-128.,  512.,  128., -512.]], device='cuda:0')
-'''
-class AnchorGenerator(Generator):
-    def __init__(self, scales, ratios): #,image_size,feat_stride
-        super().__init__(scales, ratios)
-        # self.feature_szie = image_size/feat_stride
-        self.base_anchors = self.generate_anchors()
-
-    def RPN_proposal_target(self):
-        return None
-
-    @staticmethod # should fixe
-    def get_LabelInfo(label_path):
-        with open(label_path,'r') as file:
-            # x0,y0,w,h
-            cfg = file.read().splitlines()
-        data = []
-        for lines in cfg:
-            ln = lines.split(' ')
-            ln = [eval(i) for i in ln]
-            data.append([ln[0],ln[1],ln[2],ln[1]+ln[3],ln[2]+ln[4]])
-        # x = xmin
-        # y = ymin
-        # w = xmax - xmin
-        # h = ymax - ymin
-        return data
+        ratios = torch.as_tensor(self.ratios,  device=self.device)**(1/2)
+        ind = 0
+        for sca in self.scales:
+            for rat in self.ratios:
+                
+                self.base_anchors[ind][0] = sca/(rat**(1/2)) #as anchor_w
+                self.base_anchors[ind][1] = rat*sca/(rat**(1/2)) #as anchor_h
+                ind+=1
+        return self.base_anchors #contain 12 type of anchor_size
 
 
 class Indicator:
