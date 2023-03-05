@@ -24,14 +24,22 @@ class RPN_loss(nn.Module):
         loss_box = 0
         num_obj_cls = len(anchor_scales)*len(anchor_ratios)
         num_cls_box = len(anchor_scales)*len(anchor_ratios) * 6
-        for i in range(num_obj_cls,num_obj_cls*2,2):
+        #0~23 cls_loss
+        for i in range(0,num_obj_cls*2,2):
             loss_obj = loss_obj\
                 + self.log_loss(pred[:,i,...],target[:,0,...]) \
                 + self.log_loss(pred[:,i+1,...],target[:,1,...]) 
         loss_obj = loss_obj/(len(anchor_scales)*len(anchor_ratios))
         
-        for i in range(num_obj_cls,num_cls_box ,4):
-            pass
+        anchor_index=0
+        for i in range(num_obj_cls*2,num_obj_cls*6,4):
+        
+            box = \
+                (pred[:,i,...]-target[:,2,...])/self.base_anchors[anchor_index][0] \
+                + (pred[:,i+1,...]-target[:,3,...])/self.base_anchors[anchor_index][1] \
+                + torch.log(pred[:,i+2,...]/target[:,2,...])\
+                + torch.log(pred[:,i+3,...]/target[:,3,...])
+            anchor_index+=1
 
 
 

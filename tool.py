@@ -28,16 +28,30 @@ class AnchorGenerator:
 class Indicator:
     @staticmethod
     def IoU(pred,true_ground):
-        # assume input size is (1,4,slide,slode)
-        batch_num = true_ground.shape[0]
-        IoU_loss = 0
-        for i in range(batch_num):
-            intersection = \
-                (true_ground[i,4,...] - (pred[i,2,...]-true_ground[i,2,...]))*(true_ground[i,5,...]-(pred[i,3,...]-true_ground[i,3,...]))
-            union = \
-                pred[i,4,...]*pred[i,5,...] + true_ground[i,4,...]*true_ground[i,5,...] - intersection
-            if torch.equal(union,torch.zeros_like(union)):
-                union = 0.00001
-        IoU_loss+= torch.sum( intersection/union )
+        # assume input size is (1,6,slide,slode)
+        feature_w = true_ground.shape[2]
         
-        return IoU_loss
+
+        intersection = \
+            (true_ground[:,4,...] - (pred[:,2,...]-true_ground[:,2,...]))*(true_ground[:,5,...]-(pred[:,3,...]-true_ground[:,3,...]))
+        union = \
+            pred[:,4,...]*pred[:,5,...] + true_ground[:,4,...]*true_ground[:,5,...] - intersection
+        
+        if torch.equal(union,torch.zeros_like(union)):
+            union = 0.00001
+        IoU_inde = intersection/union
+        print(intersection)
+        print(union)
+        print(IoU_inde)
+        # for i in range(IoU_inde.shape[1]):
+        #     for j in range(IoU_inde.shape[2]):
+        #         if IoU_inde[0][i][j]>0.7 or IoU_inde[0][i][j]<0.3:
+        #             IoU_inde[0][i][j] = 1
+        #         else:
+        #             IoU_inde[0][i][j] = 0
+
+        return IoU_inde
+        # if IoU_inde>0.7 or IoU_inde<0.3:
+        #     return True
+        # else:
+        #     return False
