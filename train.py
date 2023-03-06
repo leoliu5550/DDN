@@ -7,7 +7,7 @@ from model import RPN_model
 from torch.utils.data import DataLoader
 from Data import RPN_DATA
 from loss import RPN_loss
-
+torch.set_printoptions(profile="full")
 with open('config.yaml','r') as file:
     _cfg = yaml.safe_load(file)
 
@@ -15,7 +15,7 @@ with open('config.yaml','r') as file:
 MODEL_PATH = os.path.join('model',_cfg['MODELNAME'][0])
 
 # training loop
-EPOCH = 100# problem
+EPOCH = 1# problem
 BATCH = 1
 SLIDE = 16
 LEARNING_RATE = 0.001
@@ -51,17 +51,18 @@ optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 for i,_ in enumerate(range(EPOCH)):
     try:
-        image,labels,picture_name = next(dataloader_iterator)
+        image,labels,loc,picture_name = next(dataloader_iterator)
     except StopIteration:
         dataloader_iterator = iter(dataloader)
-        image,labels,picture_name = next(dataloader_iterator)
+        image,labels,loc,picture_name = next(dataloader_iterator)
 
     optimizer.zero_grad()
     image = image.to(device)
     labels = labels.to(device)
+    loc = loc.to(device)
 
     outputs = model(image)
-    loss = loss_fn(outputs,labels)
+    loss = loss_fn(outputs,labels) #,loc
     print(i,picture_name,loss)
     loss.backward()
     optimizer.step()

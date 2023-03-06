@@ -35,11 +35,13 @@ class RPN_DATA(Dataset):
         RPN_obj= torch.zeros([1,self.side,self.side])
         RPN_nobj = torch.ones([1,self.side,self.side])
         RPN_boxs = torch.zeros([4,self.side,self.side])
-
-        for lines in labels:
+        loc = torch.zeros(labels.shape[0],2)
+        for i,lines in enumerate(labels):
             # use x,y,w,h system
             x = int(lines[1] * self.side)
             y = int(lines[2] * self.side)
+            loc[i][0] = x
+            loc[i][1] = y
             RPN_obj[0][x][y] = 1
             RPN_nobj[0][x][y] = 0
             RPN_boxs[0][x][y] = lines[1]- x * (1/self.side)   # move O(0,0) to O(1,2) etc...
@@ -48,7 +50,7 @@ class RPN_DATA(Dataset):
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
         
-        return image,RPN_labels,single_image_path
+        return image,RPN_labels,loc,single_image_path
 
 
 

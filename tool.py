@@ -29,29 +29,32 @@ class Indicator:
     @staticmethod
     def IoU(pred,true_ground):
         # assume input size is (1,6,slide,slode)
-        feature_w = true_ground.shape[2]
-        
 
-        intersection = \
-            (true_ground[:,4,...] - (pred[:,2,...]-true_ground[:,2,...]))*(true_ground[:,5,...]-(pred[:,3,...]-true_ground[:,3,...]))
-        union = \
-            pred[:,4,...]*pred[:,5,...] + true_ground[:,4,...]*true_ground[:,5,...] - intersection
+
+        Uperx = torch.max(pred[:,0,...] - pred[:,2,...]/2,\
+                        true_ground[:,0,...] - true_ground[:,2,...]/2)
+        Upery = torch.max(pred[:,1,...] - pred[:,3,...]/2,\
+                        true_ground[:,1,...] - true_ground[:,3,...]/2)
+        
+        Botx = torch.min(pred[:,0,...] - pred[:,2,...]/2,\
+                        true_ground[:,0,...] - true_ground[:,2,...]/2)
+        
+        Boty = torch.min(pred[:,1,...] - pred[:,3,...]/2,\
+                        true_ground[:,1,...] - true_ground[:,3,...]/2)
+
+        intersection = torch.abs((Uperx - Botx) * (Upery - Boty))
+        union = torch.abs(pred[:,4,...] * pred[:,5,...] \
+            + true_ground[:,4,...] * true_ground[:,5,...])
+
         
         if torch.equal(union,torch.zeros_like(union)):
             union = 0.00001
         IoU_inde = intersection/union
-        print(intersection)
-        print(union)
-        print(IoU_inde)
-        # for i in range(IoU_inde.shape[1]):
-        #     for j in range(IoU_inde.shape[2]):
-        #         if IoU_inde[0][i][j]>0.7 or IoU_inde[0][i][j]<0.3:
-        #             IoU_inde[0][i][j] = 1
-        #         else:
-        #             IoU_inde[0][i][j] = 0
+        for i in range(IoU_inde.shape[1]):
+            for j in range(IoU_inde.shape[2]):
+                if IoU_inde[0][i][j]>0.7 or IoU_inde[0][i][j]<0.3:
+                    IoU_inde[0][i][j] = 1
+                else:
+                    IoU_inde[0][i][j] = 0
 
         return IoU_inde
-        # if IoU_inde>0.7 or IoU_inde<0.3:
-        #     return True
-        # else:
-        #     return False
