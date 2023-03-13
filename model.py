@@ -72,7 +72,7 @@ class R1Block(nn.Module):
     def __init__(self,in_channel,**kwargs):
         super().__init__()
         self.layers = CNNBlock(in_channel = in_channel,out_channel = 64,kernel_size = 7
-                               ,stride =2,padding = 3,**kwargs)
+                                ,stride =2,padding = 3,**kwargs)
         # self.maxpool = nn.MaxPool2d(kernel_size =3,stride = 2)
     def forward(self,x):
         x = self.layers(x)
@@ -203,9 +203,12 @@ class RPN_model(nn.Module):
         self.RPN = RPN(in_channel=3840)
     
     def forward(self,x):
-        x = self.MFN(x)
-        x = self.RPN(x)
 
+
+
+        x = self.MFN(x)
+
+        x = self.RPN(x)
 
 
         return x

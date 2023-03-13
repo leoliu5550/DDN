@@ -51,7 +51,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 
 for i,_ in enumerate(range(EPOCH)):
     try:
-        image,labels,loc,picture_name = next(dataloader_iterator)
+        image,labels,loc,picture_name = next(dataloader_iterator) #loc
     except StopIteration:
         dataloader_iterator = iter(dataloader)
         image,labels,loc,picture_name = next(dataloader_iterator)
@@ -59,15 +59,17 @@ for i,_ in enumerate(range(EPOCH)):
     optimizer.zero_grad()
     image = image.to(device)
     labels = labels.to(device)
-    loc = loc.to(device)
+    # loc = loc.to(device)
 
     outputs = model(image)
-    loss = loss_fn(outputs,labels) #,loc
+    # torch.save(outputs, "./pred.pt")
+    loss = loss_fn(outputs,labels,loc)
+    # torch.save(labels, "./ans.pt")
     print(i,picture_name,loss)
     loss.backward()
     optimizer.step()
 
-torch.save(model,MODEL_PATH)
+# torch.save(model,MODEL_PATH)
 torch.cuda.empty_cache()
 
 

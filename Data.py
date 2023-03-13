@@ -13,12 +13,11 @@ class RPN_DATA(Dataset):
         # print(cfg_path)
         with open(cfg_path, 'r') as file:
             self.data_cfg = yaml.safe_load(file)
-        
+        with open('config.yaml','r') as file:
+            self.cfg = yaml.safe_load(file)
         self.image_path = os.path.join(path,self.data_cfg['train'][2:])
         self.image_file = os.listdir(self.image_path)
         self.label_path = os.path.join(os.path.split(self.image_path)[0],'labels')
-        with open('config.yaml','r') as file:
-            self.cfg = yaml.safe_load(file)
             
     def __len__(self):
         return len(os.listdir(self.image_path))
@@ -50,7 +49,7 @@ class RPN_DATA(Dataset):
             RPN_boxs[3][x][y] = lines[4]
         RPN_labels = torch.cat((RPN_obj,RPN_nobj,RPN_boxs))
         
-        return image,RPN_labels,loc,single_image_path
+        return image,RPN_labels,loc,single_image_path# loc
 
 
 
@@ -83,10 +82,6 @@ class RPN_DATA(Dataset):
 #         return len(self.annotations)
 
 #     def __getitem__(self, index):
-#         label_path = os.path.join(self.label_dir, self.annotations.iloc[index, 1])
-#         bboxes = np.roll(np.loadtxt(fname=label_path, delimiter=" ", ndmin=2), 4, axis=1).tolist()
-#         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
-#         image = np.array(Image.open(img_path).convert("RGB"))
 
 #         if self.transform:
 #             augmentations = self.transform(image=image, bboxes=bboxes)

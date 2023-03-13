@@ -17,7 +17,16 @@ class RPN_loss(nn.Module):
         self.L1_loss = torch.nn.SmoothL1Loss(reduction='none')
         self.log_loss = torch.nn.BCEWithLogitsLoss(reduction='sum')
         self.base_anchors = AnchorGenerator().generate_anchors()
-    def forward(self,pred,target):
+    def forward(self,pred,target,loc):
+        
+        print('pred')
+        print(pred)
+        print('====================================')
+        print('target')
+        print(target)
+        print('====================================')
+        print('loc')
+        print(loc)
         # pred is {'cls1,cls2,...,box1,box2,...'} 2*12+4*12
         # class obj and noobj loss
         loss_obj = 0
@@ -33,29 +42,53 @@ class RPN_loss(nn.Module):
 
 
         anchor_index=0
-        for i in range(num_obj_cls*2,num_obj_cls*6,4):
-            pred_box = torch.cat((
-                pred[:,i,...]/self.base_anchors[anchor_index][0],
-                pred[:,i+1,...]/self.base_anchors[anchor_index][1],
-                torch.log(pred[:,i+2,...]/self.base_anchors[anchor_index][0]),
-                torch.log(pred[:,i+3,...]/self.base_anchors[anchor_index][1])
-            ),0)
-            target_box =torch.cat((
-                target[:,2,...]/self.base_anchors[anchor_index][0],
-                target[:,3,...]/self.base_anchors[anchor_index][1],
-                torch.log(target[:,4,...]/self.base_anchors[anchor_index][0]),
-                torch.log(target[:,5,...]/self.base_anchors[anchor_index][1])
-            ),0)
+        loc = torch.squeeze(loc)
+
+        for c in range(num_obj_cls*2,num_obj_cls*6,4):# iter in channel
+            for x,y in loc:
+                x = int(x.item())
+                y = int(y.item())
+                pred_box = torch.cat((
+                    pred[:,c,x,y]/self.base_anchors[anchor_index][0],
+                    pred[:,c+1,x,y]/self.base_anchors[anchor_index][1],
+                    torch.log(pred[:,c+2,x,y]/self.base_anchors[anchor_index][0]),
+                    torch.log(pred[:,c+3,x,y]/self.base_anchors[anchor_index][1])
+                ),0)
+                
+
+
+
+                target_box =torch.cat((
+                    target[:,2,x,y]/self.base_anchors[anchor_index][0],
+                    target[:,3,x,y]/self.base_anchors[anchor_index][1],
+                    torch.log(target[:,4,x,y]/self.base_anchors[anchor_index][0]),
+                    torch.log(target[:,5,x,y]/self.base_anchors[anchor_index][1])
+                ),0)
+            # print('====================================')
+            # print('Current C')
+            # print(c)
+            # print('====================================')
+            # print('anchor')
+            # print(self.base_anchors[anchor_index][0])
+            # print(self.base_anchors[anchor_index][1])
+            # print('====================================')
+            # print('pred')
+            # print(pred_box)
+            # print('pred_detail')
+            # print(pred[:,c,x,y]/self.base_anchors[anchor_index][0])
+            # print(pred[:,c+1,x,y]/self.base_anchors[anchor_index][1])        
+            # print(torch.log(pred[:,c+2,x,y]/self.base_anchors[anchor_index][0]))        
+            # print(torch.log(pred[:,c+3,x,y]/self.base_anchors[anchor_index][1]))
+            # print('====================================')
+            # print('target')
+            # print(target_box)
+            # print('====================================')
+            # print('L1_loss')
+            # print(self.L1_loss(pred_box,target_box))
+            # if torch.isinf(pred).any() or torch.isnan(pred).any():
+            #     print("problem")
+            #     print(pred)
             anchor_index+=1
-        print('pred')
-        print(pred_box)
-        print('target')
-        print(target_box)
-        print(self.L1_loss(pred_box,target_box))
-        print(self.base_anchors[anchor_index-1][0])
-        print(self.base_anchors[anchor_index-1][1])
-        print(target[:,5,...])
-        print('====================')
-        print(pred[:,i+1,...])
+
         return loss_obj + loss_box
 

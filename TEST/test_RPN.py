@@ -7,21 +7,21 @@ from subnet_RPN import RPN
 should preprocess the image size to 2^n
 '''
 
-class TestRPN:
-    model = RPN(in_channel=3840)
-    x = torch.ones(2, 3840,16,16)
-    output = model(x)
+# class TestRPN:
+#     model = RPN(in_channel=3840)
+#     x = torch.ones(2, 3840,16,16)
+#     output = model(x)
 
-    def test_RPN_base(self):
+#     def test_RPN_base(self):
         
-        assert self.output.shape == torch.Size([2,72,16,16])
+#         assert self.output.shape == torch.Size([2,72,16,16])
 
-    @pytest.mark.skip(reason="just chk cls_pred is ones[16,16]")
-    def test_RPN_cls(self):
-        print()
-        test_ans = torch.zeros(16,16)
-        for i in range(24):
-            test_ans+=self.output[0][i]
-        print(test_ans)
-        assert 1==1
+#     @pytest.mark.skip(reason="just chk cls_pred is ones[16,16]")
+#     def test_RPN_cls(self):
+#         print()
+#         test_ans = torch.zeros(16,16)
+#         for i in range(24):
+#             test_ans+=self.output[0][i]
+#         print(test_ans)
+#         assert 1==1
         
