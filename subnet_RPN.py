@@ -1,6 +1,7 @@
 import torch 
 import torch.nn as nn
 import yaml
+from tool import AnchorGenerator
 
 class RPN(nn.Module):
     def __init__(self,in_channel):
@@ -10,7 +11,8 @@ class RPN(nn.Module):
                 _cfg = yaml.safe_load(file)
             except yaml.YAMLError as exc:
                 print(exc)
-                
+        # get all init anchor x0,y0,x1,y1
+        self.base_anchors = AnchorGenerator().generate_anchors()
         # 圖像輸入RPN
         self.cnn = nn.Conv2d(
                         in_channels=in_channel,
@@ -41,8 +43,8 @@ class RPN(nn.Module):
             stride = 1,
             padding = 0
         )
-        # get all init anchor x0,y0,x1,y1
-        # self.anchor = AnchorGenerator(self.anchor_ratios,self.anchor_scales).generate_anchors() # generate but unuse
+        
+
         self.ReLU = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
         
@@ -52,6 +54,14 @@ class RPN(nn.Module):
         x = self.cnn(x)
         x = self.ReLU(x)
         box_pred = self.rpn_box_pred(x)
+        box_pred = self.ReLU(box_pred)
+        anchor_index=0
+        for c in range(0,self.nc_bbox_out,4):
+            box_pred[:,c,...] = box_pred[:,c,...] * self.base_anchors[anchor_index][0]
+            box_pred[:,c+1,...] = box_pred[:,c+1,...] * self.base_anchors[anchor_index][1]
+            box_pred[:,c+2,...] = self.base_anchors[anchor_index][0] * torch.exp(box_pred[:,c+2,...])
+            box_pred[:,c+3,...] = self.base_anchors[anchor_index][1] * torch.exp(box_pred[:,c+3,...])
+            anchor_index+=1
         # channel is 24 per 2
         cls_pred = self.rpn_objcls_pred(x).squeeze(0).permute(1, 2, 0).contiguous()
         cls_pred = cls_pred.view(-1, 2)
@@ -60,6 +70,4 @@ class RPN(nn.Module):
         # output = [1,24,16,16] cat [1,48,16,16]
 
         return output
-
-
 

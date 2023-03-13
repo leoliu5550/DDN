@@ -6,24 +6,20 @@ sys.path.append("/home/lcliu/Documents/DDN")
 from loss import *
 
 class TestLoss:
-    loss = RPN_loss()
-    # def test_moment_loss(self):
-    #     pred = torch.ones([1,72,16,16])*2
-    #     target = torch.zeros([1,6,16,16])
-    #     assert self.loss(pred,target) == 9216
+    if torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    else:
+        device = torch.device('cpu')
+    loss_fn = RPN_loss()
+    pred = torch.load("./pred.pt").to(device)
+    ans  = torch.load("./ans.pt").to(device)
+    loc  = torch.load("./loc.pt").to(device)
 
-    def test_value(self):
-        x = torch.ones([1,72,2,2]) * 0.2
-        y = torch.ones([1,6,2,2]) * 0.7
-        self.loss(x,y)
 
-# ANCHOR_SCALES:
-#   - 64
-#   - 128
-#   - 256
-#   - 512
-
-# ANCHOR_RATIOS:
-#   - 1
-#   - 0.5
-#   - 2
+    def test_valueState(self):
+        loss = self.loss_fn(self.pred,self.ans,self.loc)
+        print()
+        print(loss[0])
+        print(loss[1])
+        # assert loss.loss_24inex() == False
+        # assert loss.loss_68inex == False

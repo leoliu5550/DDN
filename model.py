@@ -196,19 +196,12 @@ class MFN(nn.Module):
         return output
 
 class RPN_model(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
-
         self.MFN = MFN()
         self.RPN = RPN(in_channel=3840)
     
     def forward(self,x):
-
-
-
         x = self.MFN(x)
-
         x = self.RPN(x)
-
-
         return x

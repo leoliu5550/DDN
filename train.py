@@ -15,7 +15,7 @@ with open('config.yaml','r') as file:
 MODEL_PATH = os.path.join('model',_cfg['MODELNAME'][0])
 
 # training loop
-EPOCH = 1# problem
+EPOCH = 1 # problem
 BATCH = 1
 SLIDE = 16
 LEARNING_RATE = 0.001
@@ -59,12 +59,12 @@ for i,_ in enumerate(range(EPOCH)):
     optimizer.zero_grad()
     image = image.to(device)
     labels = labels.to(device)
-    # loc = loc.to(device)
-
+    loc = loc.to(device)
+    torch.save(loc,'loc.pt')
     outputs = model(image)
-    # torch.save(outputs, "./pred.pt")
+    torch.save(outputs, "./pred.pt")
     loss = loss_fn(outputs,labels,loc)
-    # torch.save(labels, "./ans.pt")
+    torch.save(labels, "./ans.pt")
     print(i,picture_name,loss)
     loss.backward()
     optimizer.step()
