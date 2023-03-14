@@ -12,6 +12,9 @@ class AnchorGenerator:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.base_anchors = torch.zeros(len(self.ratios)*len(self.scales),2)
 
+
+
+
     def generate_anchors(self):# only need proposal w & h
         scales = torch.as_tensor(self.scales,  device=self.device)
         ratios = torch.as_tensor(self.ratios,  device=self.device)**(1/2)
