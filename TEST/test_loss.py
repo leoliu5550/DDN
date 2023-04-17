@@ -7,7 +7,7 @@ from loss import *
 
 class TestLoss:
     if torch.cuda.is_available():
-        device = torch.device('cuda:0')
+        device = torch.device('cuda:1')
     else:
         device = torch.device('cpu')
     loss_fn = RPN_loss()

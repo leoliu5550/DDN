@@ -28,7 +28,7 @@ dataloader_iterator = iter(dataloader)
 
 # GPU config
 if torch.cuda.is_available():
-    device = torch.device('cuda:0')
+    device = torch.device('cuda:1')
 else:
     device = torch.device('cpu')
 

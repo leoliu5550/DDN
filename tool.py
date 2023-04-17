@@ -9,7 +9,7 @@ class AnchorGenerator:
             cfg = yaml.safe_load(file)
         self.scales = cfg['ANCHOR_SCALES']
         self.ratios = cfg['ANCHOR_RATIOS']
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         self.base_anchors = torch.zeros(len(self.ratios)*len(self.scales),2)
 
     def generate_anchors(self):# only need proposal w & h
